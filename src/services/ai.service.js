@@ -9,7 +9,7 @@ const generatePlan = async (options) => {
 
   const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: geminiModel });
+  const model = genAI.getGenerativeModel({ model: geminiModel }, { apiVersion: "v1" });
 
   const prompt = `
 User goal: "${goal}"
