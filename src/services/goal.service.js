@@ -3,19 +3,22 @@ const Task = require('../models/task.model');
 const ApiError = require('../utils/ApiError');
 
 const createGoalWithTasks = async (userId, goalData) => {
-  const { title, duration, description, tasks } = goalData;
+  const { title, timeframe, pace, preferences, description, tasks } = goalData;
 
   const goal = await Goal.create({
     userId,
     title,
     description: description || '',
-    duration,
+    timeframe,
+    pace: pace || 'Moderate',
+    preferences: preferences || { weekendsOff: false, earlyBird: true, focusFundamentals: false }
   });
 
   if (tasks && tasks.length > 0) {
     const mappedTasks = tasks.map((t, index) => ({
       ...t,
-      // Default to "medium" priority and simple dates if not provided
+      title: t.title,
+      description: t.description,
       startDate: t.start_date ? new Date(t.start_date) : new Date(),
       endDate: t.end_date ? new Date(t.end_date) : new Date(),
       priority: t.priority || 'medium',

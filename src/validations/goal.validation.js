@@ -12,7 +12,13 @@ const createGoal = {
   body: Joi.object().keys({
     title: Joi.string().required(),
     description: Joi.string().optional().allow(''),
-    duration: Joi.string().required(),
+    timeframe: Joi.string().required(),
+    pace: Joi.string().optional().default('Moderate'),
+    preferences: Joi.object().keys({
+        weekendsOff: Joi.boolean().default(false),
+        earlyBird: Joi.boolean().default(true),
+        focusFundamentals: Joi.boolean().default(false)
+    }).optional(),
     tasks: Joi.array().items(taskSchema).optional(),
   }),
 };
@@ -21,6 +27,13 @@ const createGoal = {
 const generateAndSave = {
   body: Joi.object().keys({
     goal: Joi.string().required(),
+    timeframe: Joi.string().required(),
+    pace: Joi.string().optional().default('Moderate'),
+    preferences: Joi.object().keys({
+        weekendsOff: Joi.boolean().default(false),
+        earlyBird: Joi.boolean().default(true),
+        focusFundamentals: Joi.boolean().default(false)
+    }).optional(),
   }),
 };
 

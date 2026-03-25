@@ -19,9 +19,24 @@ const deleteGoal = catchAsync(async (req, res) => {
 
 // Gộp: AI generate plan → lưu vào DB → trả về goal + tasks
 const generateAndSave = catchAsync(async (req, res) => {
-  const { goal: goalText } = req.body;
-  const aiPlan = await aiService.generatePlan(goalText);
-  const saved = await goalService.createGoalWithTasks(req.user._id, aiPlan);
+  const { goal: goalText, timeframe, pace, preferences } = req.body;
+  
+  // AI tạo kế hoạch dựa trên các tham số cá nhân hóa
+  const aiPlan = await aiService.generatePlan({
+    goal: goalText,
+    timeframe,
+    pace,
+    preferences
+  });
+
+  // Lưu vào DB kèm theo các preferences của người dùng
+  const saved = await goalService.createGoalWithTasks(req.user._id, {
+      ...aiPlan,
+      timeframe,
+      pace,
+      preferences
+  });
+
   res.status(201).json({ success: true, data: saved });
 });
 

@@ -1,7 +1,8 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const ApiError = require('../utils/ApiError');
 
-const generatePlan = async (goal) => {
+const generatePlan = async (options) => {
+  const { goal, timeframe, pace, preferences } = options;
   if (!process.env.GEMINI_API_KEY) {
       throw new ApiError(500, 'Gemini API key is missing');
   }
@@ -11,16 +12,26 @@ const generatePlan = async (goal) => {
 
   const prompt = `
 User goal: "${goal}"
+Timeframe: "${timeframe}"
+Intensity/Pace: "${pace}"
+Specific Preferences:
+- Weekends off: ${preferences?.weekendsOff ? 'Yes' : 'No'}
+- Early bird (AM tasks preference): ${preferences?.earlyBird ? 'Yes' : 'No'}
+- Focus on fundamentals: ${preferences?.focusFundamentals ? 'Yes' : 'No'}
+
+Role: You are an AI Architect of Success. Based on the user constraints, design a hyper-personalized roadmap. 
+If user wants "Aggressive" pace, add more tasks per week. If "Casual", space them out. 
+If "Weekends off" is Yes, do not schedule tasks on Saturday or Sunday.
 
 Return ONLY JSON. Do not add any backticks or markdown formatting. The JSON must follow this exact format:
 
 {
   "title": "A short expressive title for the goal",
-  "duration": "Duration required, e.g., '3 months'",
+  "timeframe": "${timeframe}",
   "tasks": [
     {
       "title": "Task title",
-      "description": "Task description",
+      "description": "Task description, tailored to the user's pace",
       "start_date": "YYYY-MM-DD",
       "end_date": "YYYY-MM-DD",
       "priority": "low | medium | high"

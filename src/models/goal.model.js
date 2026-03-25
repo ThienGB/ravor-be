@@ -15,10 +15,24 @@ const goalSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  duration: {
-    type: String, // e.g. "3 months"
+  timeframe: {
+    type: String, // e.g. "30 days", "3 months"
     required: true,
   },
+  pace: {
+    type: String, // e.g. "Casual", "Moderate", "Aggressive"
+    default: "Moderate",
+  },
+  preferences: {
+    weekendsOff: { type: Boolean, default: false },
+    earlyBird: { type: Boolean, default: true },
+    focusFundamentals: { type: Boolean, default: false }
+  },
+  status: {
+    type: String,
+    enum: ['active', 'completed', 'archived'],
+    default: 'active'
+  }
 }, {
   timestamps: true,
 });
