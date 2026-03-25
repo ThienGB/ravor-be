@@ -9,7 +9,7 @@ const generatePlan = async (options) => {
 
   // Khởi tạo SDK mới theo doc
   const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-  const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite-001";
 
   const prompt = `
 User goal: "${goal}"

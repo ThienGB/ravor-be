@@ -40,7 +40,13 @@ const generateAndSave = catchAsync(async (req, res) => {
   res.status(201).json({ success: true, data: saved });
 });
 
+const getGoal = catchAsync(async (req, res) => {
+  const goal = await goalService.getGoalById(req.params.id, req.user._id);
+  res.json({ success: true, data: goal });
+});
+
 module.exports = {
+  getGoal,
   createGoal,
   getGoals,
   deleteGoal,

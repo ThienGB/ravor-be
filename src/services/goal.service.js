@@ -79,8 +79,32 @@ const deleteGoal = async (goalId, userId) => {
   return goal;
 };
 
+const getGoalById = async (goalId, userId) => {
+  const goal = await Goal.findOne({ _id: goalId, userId }).lean();
+  if (!goal) {
+    throw new ApiError(404, 'Goal not found');
+  }
+
+  // Fetch tasks
+  const tasks = await Task.find({ goalId: goal._id }).sort({ order: 1 });
+  
+  // Calculate progress
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter(t => t.isDone).length;
+  const progress = totalTasks > 0 ? (completedTasks / totalTasks) : 0;
+
+  return {
+    ...goal,
+    tasks,
+    totalTasks,
+    completedTasks,
+    progress
+  };
+};
+
 module.exports = {
   createGoalWithTasks,
   getGoalsByUser,
+  getGoalById,
   deleteGoal,
 };

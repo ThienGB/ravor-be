@@ -15,6 +15,7 @@ router.route('/')
   .get(auth, goalController.getGoals);
 
 router.route('/:id')
+  .get(auth, goalController.getGoal)
   .delete(auth, goalController.deleteGoal);
 
 router.get('/:id/tasks', auth, taskController.getTasks);
