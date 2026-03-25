@@ -15,13 +15,22 @@ const taskSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
-  startDate: {
-    type: Date,
-    required: true,
+  // Mốc thời gian tương đối
+  day: {
+    type: String, // e.g. "Day 1"
   },
-  endDate: {
+  timeOfDay: {
+    type: String, // e.g. "Morning", "Afternoon"
+  },
+  startTime: {
+    type: String, // e.g. "09:00" - Dùng để bắn Notification sau này
+  },
+  duration: {
+    type: String, // e.g. "1-2h"
+  },
+  // Mốc thời gian tuyệt đối (Dùng cho Calendar/Notifications)
+  scheduledAt: {
     type: Date,
-    required: true,
   },
   isDone: {
     type: Boolean,

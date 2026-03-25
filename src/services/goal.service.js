@@ -15,16 +15,32 @@ const createGoalWithTasks = async (userId, goalData) => {
   });
 
   if (tasks && tasks.length > 0) {
-    const mappedTasks = tasks.map((t, index) => ({
-      ...t,
-      title: t.title,
-      description: t.description,
-      startDate: t.start_date ? new Date(t.start_date) : new Date(),
-      endDate: t.end_date ? new Date(t.end_date) : new Date(),
-      priority: t.priority || 'medium',
-      goalId: goal._id,
-      order: index,
-    }));
+    const today = new Date();
+    const mappedTasks = tasks.map((t, index) => {
+      // Tính toán ngày dựa trên "Day X"
+      const dayOffset = parseInt(t.day?.replace(/\D/g, '') || '1') - 1;
+      const scheduledDate = new Date(today);
+      scheduledDate.setDate(today.getDate() + dayOffset);
+      
+      // Gán giờ nếu có startTime (HH:mm)
+      if (t.startTime && t.startTime.includes(':')) {
+          const [hours, minutes] = t.startTime.split(':');
+          scheduledDate.setHours(parseInt(hours), parseInt(minutes), 0);
+      }
+
+      return {
+        goalId: goal._id,
+        title: t.task || t.title,
+        description: t.description || '',
+        day: t.day,
+        timeOfDay: t.timeOfDay,
+        startTime: t.startTime,
+        duration: t.duration,
+        priority: (t.priority || 'medium').toLowerCase(),
+        scheduledAt: scheduledDate,
+        order: index,
+      };
+    });
     await Task.insertMany(mappedTasks);
   }
 
@@ -39,7 +55,7 @@ const getGoalsByUser = async (userId) => {
   const goalsWithStats = await Promise.all(goals.map(async (goal) => {
     const tasks = await Task.find({ goalId: goal._id });
     const totalTasks = tasks.length;
-    const completedTasks = tasks.filter(t => t.status === 'completed').length;
+    const completedTasks = tasks.filter(t => t.isDone).length;
     
     return {
       ...goal,

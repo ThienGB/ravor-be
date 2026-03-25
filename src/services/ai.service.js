@@ -1,15 +1,15 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenAI } = require('@google/genai');
 const ApiError = require('../utils/ApiError');
 
 const generatePlan = async (options) => {
   const { goal, timeframe, pace, preferences } = options;
   if (!process.env.GEMINI_API_KEY) {
-      throw new ApiError(500, 'Gemini API key is missing (Check process.env.GEMINI_API_KEY)');
+      throw new ApiError(500, 'Gemini API key is missing (Check GEMINI_API_KEY in env)');
   }
 
-  const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: geminiModel }, { apiVersion: "v1" });
+  // Khởi tạo SDK mới theo doc
+  const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
   const prompt = `
 User goal: "${goal}"
@@ -29,46 +29,44 @@ Return ONLY JSON. Do not add any backticks or markdown formatting. The JSON must
 {
   "title": "A short expressive title for the goal",
   "timeframe": "${timeframe}",
+  "pace": "${pace}",
   "tasks": [
     {
-      "title": "Task title",
-      "description": "Task description, tailored to the user's pace",
-      "start_date": "YYYY-MM-DD",
-      "end_date": "YYYY-MM-DD",
-      "priority": "low | medium | high"
+      "day": "Day 1",
+      "timeOfDay": "Morning",
+      "startTime": "09:00",
+      "task": "Task description",
+      "duration": "1-2h",
+      "priority": "High"
     }
   ]
 }
   `;
 
   try {
-    const result = await model.generateContent({
+    const response = await client.models.generateContent({
+      model: geminiModel,
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-      }
     });
 
-    const response = await result.response;
-    const content = response.text().trim();
+    const content = response.text.trim();
     
-    // Find the first '{' and the last '}' to extract only the JSON part
+    // Tìm dấu ngoặc nhọn để trích xuất JSON
     const startIdx = content.indexOf('{');
     const endIdx = content.lastIndexOf('}');
     
     if (startIdx === -1 || endIdx === -1) {
-        throw new ApiError(500, 'AI response does not contain valid JSON format: ' + content);
+        console.error("AI response:", content);
+        throw new ApiError(500, 'AI response does not contain valid JSON format');
     }
     
     const jsonStr = content.substring(startIdx, endIdx + 1);
     const parsedData = JSON.parse(jsonStr);
     return parsedData;
+
   } catch (error) {
     console.error("AI Service Error:", error);
-    if (error instanceof SyntaxError) {
-        throw new ApiError(500, 'AI generated invalid JSON (Parse error): ' + error.message);
-    }
-    const message = error.response ? (error.response.data?.error?.message || error.message) : error.message;
+    const message = error.message || 'Failed to connect to AI or generate plan';
     throw new ApiError(500, 'AI Service connectivity error: ' + message);
   }
 };
