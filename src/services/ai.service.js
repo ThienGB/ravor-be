@@ -4,11 +4,12 @@ const ApiError = require('../utils/ApiError');
 const generatePlan = async (options) => {
   const { goal, timeframe, pace, preferences } = options;
   if (!process.env.GEMINI_API_KEY) {
-      throw new ApiError(500, 'Gemini API key is missing');
+      throw new ApiError(500, 'Gemini API key is missing (Check process.env.GEMINI_API_KEY)');
   }
 
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+  const model = genAI.getGenerativeModel({ model: geminiModel });
 
   const prompt = `
 User goal: "${goal}"
