@@ -50,15 +50,25 @@ Return ONLY JSON. Do not add any backticks or markdown formatting. The JSON must
 
     const response = await result.response;
     const content = response.text().trim();
-    // Sometimes AI tries to wrap inside \`\`\`json ... \`\`\` despite explicit instructions
-    const parsedData = JSON.parse(content.replace(/```json|```/g, '').trim());
+    
+    // Find the first '{' and the last '}' to extract only the JSON part
+    const startIdx = content.indexOf('{');
+    const endIdx = content.lastIndexOf('}');
+    
+    if (startIdx === -1 || endIdx === -1) {
+        throw new ApiError(500, 'AI response does not contain valid JSON format: ' + content);
+    }
+    
+    const jsonStr = content.substring(startIdx, endIdx + 1);
+    const parsedData = JSON.parse(jsonStr);
     return parsedData;
   } catch (error) {
     console.error("AI Service Error:", error);
     if (error instanceof SyntaxError) {
-        throw new ApiError(500, 'AI generated invalid JSON format');
+        throw new ApiError(500, 'AI generated invalid JSON (Parse error): ' + error.message);
     }
-    throw new ApiError(500, 'Failed to connect to AI or generate plan');
+    const message = error.response ? (error.response.data?.error?.message || error.message) : error.message;
+    throw new ApiError(500, 'AI Service connectivity error: ' + message);
   }
 };
 
