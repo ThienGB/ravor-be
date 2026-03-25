@@ -7,6 +7,7 @@ const taskController = require('../controllers/task.controller');
 const router = express.Router();
 
 router.route('/:id')
+  .get(auth, taskController.getTask)
   .put(auth, validate(taskValidation.updateTask), taskController.updateTask);
 
 module.exports = router;

@@ -28,7 +28,22 @@ const updateTask = async (taskId, updateBody, userId) => {
   return task;
 };
 
+const getTaskById = async (taskId, userId) => {
+  const task = await Task.findById(taskId);
+  if (!task) {
+    throw new ApiError(404, 'Task not found');
+  }
+
+  const goal = await Goal.findOne({ _id: task.goalId, userId });
+  if (!goal) {
+    throw new ApiError(403, 'Not authorized to view this task');
+  }
+
+  return task;
+};
+
 module.exports = {
   getTasksByGoal,
   updateTask,
+  getTaskById,
 };
