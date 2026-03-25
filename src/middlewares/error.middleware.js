@@ -1,5 +1,9 @@
 const ApiError = require('../utils/ApiError');
 
+/**
+ * Middleware xử lý lỗi tập trung.
+ * Phải có đủ 4 tham số (err, req, res, next) để Express nhận diện là Error Middleware.
+ */
 const errorHandler = (err, req, res, next) => {
   let { statusCode, message } = err;
   
@@ -18,7 +22,7 @@ const errorHandler = (err, req, res, next) => {
       console.error(err);
   }
 
-  res.status(statusCode || 500).json(response);
+  res.status(statusCode).json(response);
 };
 
 module.exports = {
