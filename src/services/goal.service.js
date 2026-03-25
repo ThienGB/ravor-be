@@ -43,8 +43,9 @@ const createGoalWithTasks = async (userId, goalData) => {
     });
     await Task.insertMany(mappedTasks);
   }
-
-  return goal;
+ 
+  // Trả về object goal đầy đủ kèm task và stats
+  return getGoalById(goal._id, userId);
 };
 
 const getGoalsByUser = async (userId) => {

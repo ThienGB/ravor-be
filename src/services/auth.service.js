@@ -75,11 +75,17 @@ const loginWithGoogle = async (idToken) => {
     audience: process.env.GOOGLE_CLIENT_ID,
   });
   const payload = ticket.getPayload();
-  const { email, name } = payload;
+  const { email, name, picture, sub } = payload;
 
   let user = await User.findOne({ email });
   if (!user) {
-    user = await User.create({ email, name });
+    user = await User.create({ email, name, picture, googleId: sub });
+  } else {
+    // Cập nhật profile nếu có thay đổi từ Google
+    user.name = name;
+    user.picture = picture;
+    user.googleId = sub;
+    await user.save();
   }
   return user;
 };

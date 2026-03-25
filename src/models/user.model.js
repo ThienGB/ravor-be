@@ -23,6 +23,15 @@ const userSchema = mongoose.Schema({
     type: String,
     default: null,
   },
+  picture: {
+    type: String,
+    default: null,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
 }, {
   timestamps: true,
 });
