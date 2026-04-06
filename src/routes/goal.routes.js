@@ -16,7 +16,10 @@ router.route('/')
 
 router.route('/:id')
   .get(auth, goalController.getGoal)
+  .patch(auth, validate(goalValidation.updateGoal), goalController.updateGoal)
   .delete(auth, goalController.deleteGoal);
+
+router.patch('/:id/complete', auth, goalController.completeGoal);
 
 router.get('/:id/tasks', auth, taskController.getTasks);
 

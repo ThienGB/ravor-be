@@ -19,6 +19,9 @@ const goalSchema = mongoose.Schema({
     type: String, // e.g. "30 days", "3 months"
     required: true,
   },
+  startDate: {
+    type: String,
+  },
   pace: {
     type: String, // e.g. "Casual", "Moderate", "Aggressive"
     default: "Moderate",

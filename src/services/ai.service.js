@@ -2,7 +2,7 @@ const { GoogleGenAI } = require('@google/genai');
 const ApiError = require('../utils/ApiError');
 
 const generatePlan = async (options) => {
-  const { goal, timeframe, pace, preferences } = options;
+  const { goal, startDate, timeframe, pace, preferences } = options;
   if (!process.env.GEMINI_API_KEY) {
       throw new ApiError(500, 'Gemini API key is missing (Check GEMINI_API_KEY in env)');
   }
@@ -13,6 +13,7 @@ const generatePlan = async (options) => {
 
   const prompt = `
 User goal: "${goal}"
+Desired Start Date: "${startDate || 'Today'}"
 Timeframe: "${timeframe}"
 Intensity/Pace: "${pace}"
 Specific Preferences:
@@ -23,6 +24,7 @@ Specific Preferences:
 Role: You are an AI Architect of Success. Based on the user constraints, design a hyper-personalized roadmap. 
 If user wants "Aggressive" pace, add more tasks per week. If "Casual", space them out. 
 If "Weekends off" is Yes, do not schedule tasks on Saturday or Sunday.
+If "Desired Start Date" is provided, build the tasks scheduling roughly starting around that date.
 
 Return ONLY JSON. Do not add any backticks or markdown formatting. The JSON must follow this exact format:
 
@@ -32,15 +34,17 @@ Return ONLY JSON. Do not add any backticks or markdown formatting. The JSON must
   "pace": "${pace}",
   "tasks": [
     {
-      "day": "Day 1",
+      "day": 1,
       "timeOfDay": "Morning",
       "startTime": "09:00",
       "task": "Task description",
       "duration": "1-2h",
-      "priority": "High"
+      "priority": "High",
+      "resourceLink": "https://example-link.com" 
     }
   ]
 }
+Notes: "resourceLink" is optional. Provide a real or highly relevant URL (like a learning resource, tool, or website) if applicable.
   `;
 
   try {

@@ -13,6 +13,7 @@ const createGoal = {
     title: Joi.string().required(),
     description: Joi.string().optional().allow(''),
     timeframe: Joi.string().required(),
+    startDate: Joi.string().optional(),
     pace: Joi.string().optional().default('Moderate'),
     preferences: Joi.object().keys({
         weekendsOff: Joi.boolean().default(false),
@@ -28,6 +29,7 @@ const generateAndSave = {
   body: Joi.object().keys({
     goal: Joi.string().required(),
     timeframe: Joi.string().required(),
+    startDate: Joi.string().optional(),
     pace: Joi.string().optional().default('Moderate'),
     preferences: Joi.object().keys({
         weekendsOff: Joi.boolean().default(false),
@@ -37,7 +39,15 @@ const generateAndSave = {
   }),
 };
 
+const updateGoal = {
+  body: Joi.object().keys({
+    title: Joi.string().optional(),
+    startDate: Joi.string().optional().allow(null, ''),
+  }).unknown()
+};
+
 module.exports = {
   createGoal,
   generateAndSave,
+  updateGoal,
 };

@@ -19,11 +19,12 @@ const deleteGoal = catchAsync(async (req, res) => {
 
 // Gộp: AI generate plan → lưu vào DB → trả về goal + tasks
 const generateAndSave = catchAsync(async (req, res) => {
-  const { goal: goalText, timeframe, pace, preferences } = req.body;
+  const { goal: goalText, startDate, timeframe, pace, preferences } = req.body;
   
   // AI tạo kế hoạch dựa trên các tham số cá nhân hóa
   const aiPlan = await aiService.generatePlan({
     goal: goalText,
+    startDate,
     timeframe,
     pace,
     preferences
@@ -32,6 +33,7 @@ const generateAndSave = catchAsync(async (req, res) => {
   // Lưu vào DB kèm theo các preferences của người dùng
   const saved = await goalService.createGoalWithTasks(req.user._id, {
       ...aiPlan,
+      startDate,
       timeframe,
       pace,
       preferences
@@ -45,10 +47,23 @@ const getGoal = catchAsync(async (req, res) => {
   res.json({ success: true, data: goal });
 });
 
+const completeGoal = catchAsync(async (req, res) => {
+  const goal = await goalService.updateGoalStatus(req.params.id, req.user._id, 'completed');
+  res.json({ success: true, data: goal });
+});
+
+const updateGoal = catchAsync(async (req, res) => {
+  // Add flexibility to update title, startDate, config, etc.
+  const goal = await goalService.updateGoal(req.params.id, req.user._id, req.body);
+  res.json({ success: true, data: goal });
+});
+
 module.exports = {
   getGoal,
   createGoal,
   getGoals,
   deleteGoal,
   generateAndSave,
+  completeGoal,
+  updateGoal,
 };

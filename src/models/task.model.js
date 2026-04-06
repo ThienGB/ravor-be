@@ -15,9 +15,14 @@ const taskSchema = mongoose.Schema({
     type: String,
     trim: true,
   },
+  resourceLink: {
+    type: String,
+    trim: true,
+  },
+  // Mốc thời gian tương đối
   // Mốc thời gian tương đối
   day: {
-    type: String, // e.g. "Day 1"
+    type: Number, // e.g. 1, 2, 3...
   },
   timeOfDay: {
     type: String, // e.g. "Morning", "Afternoon"

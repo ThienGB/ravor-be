@@ -37,6 +37,7 @@ const createGoalWithTasks = async (userId, goalData) => {
         startTime: t.startTime,
         duration: t.duration,
         priority: (t.priority || 'medium').toLowerCase(),
+        resourceLink: t.resourceLink || t.link || '',
         scheduledAt: scheduledDate,
         order: index,
       };
@@ -103,9 +104,31 @@ const getGoalById = async (goalId, userId) => {
   };
 };
 
+const updateGoalStatus = async (goalId, userId, status) => {
+  const goal = await Goal.findOne({ _id: goalId, userId });
+  if (!goal) {
+    throw new ApiError(404, 'Goal not found');
+  }
+  goal.status = status;
+  await goal.save();
+  return getGoalById(goalId, userId);
+};
+
+const updateGoal = async (goalId, userId, updateBody) => {
+  const goal = await Goal.findOne({ _id: goalId, userId });
+  if (!goal) {
+    throw new ApiError(404, 'Goal not found');
+  }
+  Object.assign(goal, updateBody);
+  await goal.save();
+  return getGoalById(goalId, userId);
+};
+
 module.exports = {
   createGoalWithTasks,
   getGoalsByUser,
   getGoalById,
   deleteGoal,
+  updateGoalStatus,
+  updateGoal,
 };
