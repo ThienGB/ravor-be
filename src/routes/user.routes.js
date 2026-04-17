@@ -5,5 +5,6 @@ const userController = require('../controllers/user.controller');
 const router = express.Router();
 
 router.get('/me', auth, userController.getProfile);
+router.delete('/me', auth, userController.deleteMe);
 
 module.exports = router;

@@ -17,8 +17,14 @@ const getTask = catchAsync(async (req, res) => {
   res.json({ success: true, data: task });
 });
 
+const createTask = catchAsync(async (req, res) => {
+  const task = await taskService.createTask(req.body, req.user._id);
+  res.status(201).json({ success: true, data: task });
+});
+
 module.exports = {
   getTasks,
   updateTask,
   getTask,
+  createTask,
 };

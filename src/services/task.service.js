@@ -42,8 +42,19 @@ const getTaskById = async (taskId, userId) => {
   return task;
 };
 
+const createTask = async (taskBody, userId) => {
+  const goal = await Goal.findOne({ _id: taskBody.goalId, userId });
+  if (!goal) {
+    throw new ApiError(404, 'Goal not found');
+  }
+
+  const task = await Task.create(taskBody);
+  return task;
+};
+
 module.exports = {
   getTasksByGoal,
   updateTask,
   getTaskById,
+  createTask,
 };

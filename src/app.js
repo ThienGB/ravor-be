@@ -12,6 +12,7 @@ const aiRoutes = require('./routes/ai.routes');
 const goalRoutes = require('./routes/goal.routes');
 const taskRoutes = require('./routes/task.routes');
 const userRoutes = require('./routes/user.routes');
+const moderationRoutes = require('./routes/moderation.routes');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/ai', aiLimiter, aiRoutes); // Apply rate limiting to AI routes
 app.use('/goals', goalRoutes);
 app.use('/tasks', taskRoutes);
 app.use('/users', userRoutes);
+app.use('/moderation', moderationRoutes);
 
 // Unknown routes
 app.use((req, res, next) => {

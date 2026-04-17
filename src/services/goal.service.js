@@ -18,13 +18,15 @@ const createGoalWithTasks = async (userId, goalData) => {
     const today = new Date();
     const mappedTasks = tasks.map((t, index) => {
       // Tính toán ngày dựa trên "Day X"
-      const dayOffset = parseInt(t.day?.replace(/\D/g, '') || '1') - 1;
+      const dayStr = String(t.day || '1');
+      const dayOffset = parseInt(dayStr.replace(/\D/g, '') || '1') - 1;
       const scheduledDate = new Date(today);
       scheduledDate.setDate(today.getDate() + dayOffset);
       
       // Gán giờ nếu có startTime (HH:mm)
-      if (t.startTime && t.startTime.includes(':')) {
-          const [hours, minutes] = t.startTime.split(':');
+      const startTimeStr = String(t.startTime || '');
+      if (startTimeStr.includes(':')) {
+          const [hours, minutes] = startTimeStr.split(':');
           scheduledDate.setHours(parseInt(hours), parseInt(minutes), 0);
       }
 

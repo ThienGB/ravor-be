@@ -6,6 +6,9 @@ const taskController = require('../controllers/task.controller');
 
 const router = express.Router();
 
+router.route('/')
+  .post(auth, validate(taskValidation.createTask), taskController.createTask);
+
 router.route('/:id')
   .get(auth, taskController.getTask)
   .put(auth, validate(taskValidation.updateTask), taskController.updateTask);
