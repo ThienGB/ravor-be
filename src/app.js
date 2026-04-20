@@ -32,6 +32,9 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // Routes
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 app.use('/auth', authRoutes);
 app.use('/ai', aiLimiter, aiRoutes); // Apply rate limiting to AI routes
 app.use('/goals', goalRoutes);
